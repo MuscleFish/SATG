@@ -173,10 +173,10 @@ class SeqTheta2:
             "mto": [mto, True],
             "no":  [no,  False],
             "tno": [tno, False],
-            "cno": [cno, False],
             "s":   [s,   False],
             "ps":  [ps,  False],
             "c":   [c,   False],
+            "cno": [cno, False],
             "pv":  [pv,  False],
             "tv":  [tv,  False],
         }
@@ -311,8 +311,14 @@ class SeqTheta2:
     def load_models(self, save_file_path):
         all_model = models.load_model(save_file_path)
         self.input_layer = all_model.input
+        last_k = None
         for i, k in enumerate(self.out_layers.keys()):
-            self.out_layers[k][0] = all_model.output[i]
+            if i < len(all_model.output):
+                self.out_layers[k][0] = all_model.output[i]
+                if i == len(all_model.output) - 1:
+                    last_k = k
+            else:
+                self.out_layers[k][0] = self.out_layers[last_k][0]
         self.init_default_models()
 #         self.theta = self.eval_model.output[-1].get_weight('theta')
 
